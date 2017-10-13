@@ -1,5 +1,7 @@
 """updates subreddit css with compiled sass"""
 import subprocess
+import time
+
 import praw
 
 def css() -> str:
@@ -9,10 +11,13 @@ def css() -> str:
         )
     return res.stdout
 
+def uid() -> str:
+    """return date and time"""
+    return "Subreddit upload on {}".format(time.strftime("%c"))
+
 def update(reddit: praw.Reddit, style: str) -> None:
     """update subreddit stylesheet"""
-    sub: praw.models.Subreddit = reddit.subreddit("neoliberal")
-    sub.wiki("config/stylesheet").update(style)
+    reddit.subreddit("neoliberal").stylesheet.update(style, reason=uid())
     return
 
 def main() -> None:
