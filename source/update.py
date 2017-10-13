@@ -14,20 +14,8 @@ def uid() -> str:
     """return date and time"""
     return "Subreddit upload on {}".format(time.strftime("%c"))
 
-
-def update(reddit: praw.Reddit, style: str) -> None:
-    """update subreddit stylesheet"""
-    reddit.subreddit("neoliberal").stylesheet.update(style, reason=uid())
-    return
-
-
-def main() -> None:
+def update() -> None:
     """main function"""
     reddit: praw.Reddit = praw.Reddit()
-    style: str = css()
-    update(reddit, style)
+    reddit.subreddit("neoliberal").stylesheet.update(css(), reason=uid())
     return
-
-
-if __name__ == '__main__':
-    main()
