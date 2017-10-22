@@ -1,5 +1,5 @@
 """updates subreddit css with compiled sass"""
-import os
+from os import path
 import time
 from typing import List, Dict, Any, Tuple
 
@@ -21,7 +21,10 @@ def uid() -> str:
 
 
 def changed_assets(data: WebhookResponse) -> Tuple[List[str], List[str]]:
-    """identifies changed files to upload by checking if any changed files are images"""
+    """
+    identifies changed assets to upload or remove by checking if any changed files are images
+    returns a tuple containing modified / new files and removed files
+    """
     endings: List[str] = ["png", "jpg"]
 
     head_commit: Dict[str, Any] = data["head_commit"]
@@ -29,13 +32,14 @@ def changed_assets(data: WebhookResponse) -> Tuple[List[str], List[str]]:
     uploading_files: List[str] = [
         file for file in (head_commit["modified"] + head_commit["added"])
         for ending in endings
-        if os.path.splitext(file)[1] == ending
+        if path.splitext(file)[1] == ending
         ]
+
     # removed_files require a name, not file extension
     removed_files: List[str] = [
-        os.path.splitext(file)[0] for file in head_commit["removed"]
+        path.splitext(file)[0] for file in head_commit["removed"]
         for ending in endings
-        if os.path.splitext(file)[1] == ending
+        if path.splitext(file)[1] == ending
     ]
     return (uploading_files, removed_files)
 
