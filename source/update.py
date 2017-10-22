@@ -6,7 +6,8 @@ from typing import List, Dict, Any, Tuple
 import praw
 import sass
 
-WebhookResponse = Dict[str, Any] # pylint: disable=C0103
+# leave my typedefs alone, pylint: disable=C0103
+WebhookResponse = Dict[str, Any]
 
 
 def css() -> str:
