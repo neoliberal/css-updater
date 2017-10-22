@@ -33,7 +33,7 @@ def changed_assets(data: WebhookResponse) -> Tuple[List[str], List[str]]:
         file for file in (head_commit["modified"] + head_commit["added"])
         for ending in endings
         if path.splitext(file)[1] == ending
-        ]
+    ]
 
     # removed_files require a name, not file extension
     removed_files: List[str] = [
