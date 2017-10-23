@@ -44,6 +44,14 @@ class SubredditUploader(object):
         ]
         return (uploading_files, removed_files)
 
+    def upload_reason(self: SubredditUploader) -> str:
+        """creates upload reason"""
+        head_commit: Dict[str, Any] = self.webhook["head_commit"]
+        commit_id: str = head_commit["id"]
+        timestamp: str = head_commit["timestamp"]
+        author: str = head_commit["author"]["username"]
+        return "Commit {1}, created on {2} by {3}".format(commit_id, timestamp, author)
+
     def upload_stylesheet(self: SubredditUploader) -> bool:
         """compiles and uploads stylesheet"""
         style: str = ""
@@ -54,7 +62,7 @@ class SubredditUploader(object):
             print(sass_error)
             return False
 
-        self.reddit.subreddit(self.subreddit).stylesheet.update(style)
+        self.reddit.subreddit(self.subreddit).stylesheet.update(style, reason=self.upload_reason())
         return True
 
     def changed_stylesheet(self: SubredditUploader) -> bool:
