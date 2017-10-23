@@ -44,6 +44,28 @@ class SubredditUploader(object):
         ]
         return (uploading_files, removed_files)
 
+    def upload_images(self: SubredditUploader, upload: List[str], delete: List[str]) -> bool:
+        """uploads and deletes images"""
+        stylesheet: praw.models.reddit.subreddit.SubredditStylesheet = (
+            self.reddit.subreddit(self.subreddit).stylesheet
+        )
+
+        for file in upload:
+            try:
+                stylesheet.upload(path.splitext(file)[0], file)
+            except praw.exceptions.APIException as upload_error:
+                print(upload_error)
+                return False
+
+        for file in delete:
+            try:
+                stylesheet.delete_image(file)
+            except praw.exceptions.APIException as delete_error:
+                print(delete_error)
+                return False
+
+        return True
+
     def upload_reason(self: SubredditUploader) -> str:
         """creates upload reason"""
         head_commit: Dict[str, Any] = self.webhook["head_commit"]
