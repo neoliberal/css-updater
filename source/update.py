@@ -1,6 +1,6 @@
 """updates subreddit css with compiled sass"""
 from os import path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 import praw
 import sass
@@ -12,14 +12,29 @@ WebhookResponse = Dict[str, Any]
 class SubredditUploader(object):
     """various uploads"""
 
+    # pylint: disable=R0913
     def __init__(
             self: SubredditUploader, data: WebhookResponse,
-            absolute_path: str, reddit: praw.Reddit, subreddit: str
+            absolute_path: str, reddit: praw.Reddit, subreddit: str, testing_subreddit: str
     ) -> None:
         self.webhook: WebhookResponse = data
         self.reddit: praw.Reddit = reddit
-        self.subreddit: str = subreddit
         self.path: str = absolute_path
+        self.subreddit: praw.models.Subreddit = self.validate_subreddit(subreddit)
+        self.testing_subreddit: Optional[praw.models.Subreddit] = (
+            self.validate_subreddit(testing_subreddit))
+        self.testing: bool = bool(testing_subreddit)
+
+    def validate_subreddit(self: SubredditUploader,
+                           subreddit: str) -> Optional[praw.models.Subreddit]:
+        """validate that subreddits exist"""
+        try:
+            validated: praw.models.Subreddit = self.reddit.subreddit(subreddit)
+        except praw.exceptions.APIException as praw_error:
+            print(praw_error)
+            return None
+        else:
+            return validated
 
     def changed_assets(self: SubredditUploader) -> Tuple[List[str], List[str]]:
         """
