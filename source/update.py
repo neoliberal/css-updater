@@ -50,7 +50,7 @@ class SubredditUploader(object):
         commit_id: str = head_commit["id"]
         timestamp: str = head_commit["timestamp"]
         author: str = head_commit["author"]["username"]
-        return "Commit {1}, created on {2} by {3}".format(commit_id, timestamp, author)
+        return "Commit {1} created on {2} by {3}".format(commit_id, timestamp, author)
 
     def upload_stylesheet(self: SubredditUploader) -> bool:
         """compiles and uploads stylesheet"""
@@ -61,10 +61,11 @@ class SubredditUploader(object):
         except sass.CompileError as sass_error:
             print(sass_error)
             return False
-        
+
         try:
-            self.reddit.subreddit(self.subreddit).stylesheet.update(style, reason=self.upload_reason())
-        except praw.exceptions.APIException as reddit_error
+            self.reddit.subreddit(self.subreddit).stylesheet.update(
+                style, reason=self.upload_reason())
+        except praw.exceptions.APIException as reddit_error:
             print(reddit_error)
             return False
 
