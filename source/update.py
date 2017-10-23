@@ -61,8 +61,13 @@ class SubredditUploader(object):
         except sass.CompileError as sass_error:
             print(sass_error)
             return False
+        
+        try:
+            self.reddit.subreddit(self.subreddit).stylesheet.update(style, reason=self.upload_reason())
+        except praw.exceptions.APIException as reddit_error
+            print(reddit_error)
+            return False
 
-        self.reddit.subreddit(self.subreddit).stylesheet.update(style, reason=self.upload_reason())
         return True
 
     def changed_stylesheet(self: SubredditUploader) -> bool:
