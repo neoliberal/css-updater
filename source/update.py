@@ -73,6 +73,15 @@ class SubredditUploader(object):
         author: str = head_commit["author"]["username"]
         return "Commit {1} created on {2} by {3}".format(commit_id, timestamp, author)
 
+    def changed_stylesheet(self: SubredditUploader) -> bool:
+        """checks if any sass files have been changed"""
+        ending: str = "scss"
+        head_commit: Dict[str, Any] = self.webhook["head_commit"]
+        return any(
+            path.splitext(file)[1] == ending
+            for file in (head_commit["modified"] + head_commit["added"])
+        )
+
     def upload_stylesheet(self: SubredditUploader) -> bool:
         """compiles and uploads stylesheet"""
         style: str = ""
@@ -91,12 +100,3 @@ class SubredditUploader(object):
             return False
 
         return True
-
-    def changed_stylesheet(self: SubredditUploader) -> bool:
-        """checks if any sass files have been changed"""
-        ending: str = "scss"
-        head_commit: Dict[str, Any] = self.webhook["head_commit"]
-        return any(
-            path.splitext(file)[1] == ending
-            for file in (head_commit["modified"] + head_commit["added"])
-        )
