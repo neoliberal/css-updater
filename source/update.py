@@ -43,6 +43,16 @@ def changed_assets(data: WebhookResponse) -> Tuple[List[str], List[str]]:
     ]
     return (uploading_files, removed_files)
 
+def changed_spreedsheet(data: WebhookResponse) -> bool:
+    """checks if any sass files have been changed"""
+    ending: str = "scss"
+    head_commit: Dict[str, Any] = data["head_commit"]
+    return any(
+        path.splitext(file)[1] == ending
+        for file in (head_commit["modified"] + head_commit["added"])
+    )
+
+
 def update(data: WebhookResponse) -> None:
     """main function"""
     reddit: praw.Reddit = praw.Reddit()
