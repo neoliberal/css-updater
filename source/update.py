@@ -15,7 +15,7 @@ class SubredditUploader(object):
     def __init__(
             self: SubredditUploader, data: WebhookResponse,
             absolute_path: str, reddit: praw.Reddit, subreddit: str
-        ) -> None:
+    ) -> None:
         self.webhook: WebhookResponse = data
         self.reddit: praw.Reddit = reddit
         self.subreddit: str = subreddit
