@@ -23,7 +23,7 @@ class SubredditUploader(object):
         self.subreddit: praw.models.Subreddit = self.validate_subreddit(subreddit)
         self.testing_subreddit: Optional[praw.models.Subreddit] = (
             self.validate_subreddit(testing_subreddit))
-        self.testing: bool = bool(testing_subreddit)
+        self.testable: bool = bool(testing_subreddit)
 
     def validate_subreddit(self: SubredditUploader,
                            subreddit: str) -> Optional[praw.models.Subreddit]:
