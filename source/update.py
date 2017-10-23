@@ -36,6 +36,10 @@ class SubredditUploader(object):
         else:
             return validated
 
+    def get_subreddit_test(self: SubredditUploader, test: bool) -> praw.models.Subreddit:
+        """gets appropriate subreddit based on if testing and if test sub is defined"""
+        return self.subreddit if not(self.testable and test) else self.testing_subreddit
+
     def changed_assets(self: SubredditUploader) -> Tuple[List[str], List[str]]:
         """
         identifies changed assets to upload or remove by checking if any changed files are images
@@ -58,11 +62,11 @@ class SubredditUploader(object):
         ]
         return (uploading_files, removed_files)
 
-    def upload_images(self: SubredditUploader, upload: List[str], delete: List[str]) -> bool:
+    def upload_images(self: SubredditUploader, upload: List[str],
+                      delete: List[str], test: bool = False) -> bool:
         """uploads and deletes images"""
-        stylesheet: praw.models.reddit.subreddit.SubredditStylesheet = (
-            self.reddit.subreddit(self.subreddit).stylesheet
-        )
+        subreddit = self.get_subreddit_test(test)
+        stylesheet: praw.models.reddit.subreddit.SubredditStylesheet = subreddit.stylesheet
 
         for file in upload:
             try:
@@ -80,13 +84,14 @@ class SubredditUploader(object):
 
         return True
 
-    def upload_reason(self: SubredditUploader) -> str:
+    def upload_reason(self: SubredditUploader, test: bool = False) -> str:
         """creates upload reason"""
         head_commit: Dict[str, Any] = self.webhook["head_commit"]
+        warn: str = "" if not (test and self.testable) else "[Test] "
         commit_id: str = head_commit["id"]
         timestamp: str = head_commit["timestamp"]
         author: str = head_commit["author"]["username"]
-        return "Commit {1} created on {2} by {3}".format(commit_id, timestamp, author)
+        return "{1}Commit {2} created on {3} by {4}".format(warn, commit_id, timestamp, author)
 
     def changed_stylesheet(self: SubredditUploader) -> bool:
         """checks if any sass files have been changed"""
@@ -97,7 +102,7 @@ class SubredditUploader(object):
             for file in (head_commit["modified"] + head_commit["added"])
         )
 
-    def upload_stylesheet(self: SubredditUploader) -> bool:
+    def upload_stylesheet(self: SubredditUploader, test: bool = False) -> bool:
         """compiles and uploads stylesheet"""
         style: str = ""
         try:
@@ -108,7 +113,8 @@ class SubredditUploader(object):
             return False
 
         try:
-            self.reddit.subreddit(self.subreddit).stylesheet.update(
+            subreddit = self.get_subreddit_test(test)
+            subreddit.stylesheet.update(
                 style, reason=self.upload_reason())
         except praw.exceptions.APIException as reddit_error:
             print(reddit_error)
