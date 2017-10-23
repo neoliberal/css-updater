@@ -36,9 +36,8 @@ class SubredditUploader(object):
             if path.splitext(file)[1] == ending
         ]
 
-        # removed_files require a name, not file extension
         removed_files: List[str] = [
-            path.splitext(file)[0] for file in head_commit["removed"]
+            file for file in head_commit["removed"]
             for ending in endings
             if path.splitext(file)[1] == ending
         ]
@@ -59,7 +58,7 @@ class SubredditUploader(object):
 
         for file in delete:
             try:
-                stylesheet.delete_image(file)
+                stylesheet.delete_image(path.splitext(file)[0])
             except praw.exceptions.APIException as delete_error:
                 print(delete_error)
                 return False
