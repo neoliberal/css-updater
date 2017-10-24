@@ -84,14 +84,13 @@ class SubredditUploader(object):
 
         return True
 
-    def upload_reason(self: SubredditUploader, test: bool = False) -> str:
+    def upload_reason(self: SubredditUploader) -> str:
         """creates upload reason"""
         head_commit: Dict[str, Any] = self.webhook["head_commit"]
-        warn: str = "" if not (test and self.testable) else "[Test] "
         commit_id: str = head_commit["id"]
         timestamp: str = head_commit["timestamp"]
         author: str = head_commit["author"]["username"]
-        return "{1}Commit {2} created on {3} by {4}".format(warn, commit_id, timestamp, author)
+        return "Commit {1} created on {2} by {3}".format(commit_id, timestamp, author)
 
     def changed_stylesheet(self: SubredditUploader) -> bool:
         """checks if any sass files have been changed"""
