@@ -9,12 +9,12 @@ import sass
 WebhookResponse = Dict[str, Any]
 
 
-class SubredditUploader(object):
+class Uploader(object):
     """various uploads"""
 
     # pylint: disable=R0913
     def __init__(
-            self: SubredditUploader, data: WebhookResponse,
+            self: Uploader, data: WebhookResponse,
             absolute_path: str, reddit: praw.Reddit, subreddit: str, testing_subreddit: str
     ) -> None:
         self.webhook: WebhookResponse = data
@@ -25,7 +25,7 @@ class SubredditUploader(object):
             self.validate_subreddit(testing_subreddit))
         self.testable: bool = bool(testing_subreddit)
 
-    def validate_subreddit(self: SubredditUploader,
+    def validate_subreddit(self: Uploader,
                            subreddit: str) -> Optional[praw.models.Subreddit]:
         """validate that subreddits exist"""
         try:
@@ -36,11 +36,11 @@ class SubredditUploader(object):
         else:
             return validated
 
-    def get_subreddit_test(self: SubredditUploader, test: bool) -> praw.models.Subreddit:
+    def get_subreddit_test(self: Uploader, test: bool) -> praw.models.Subreddit:
         """gets appropriate subreddit based on if testing and if test sub is defined"""
         return self.subreddit if not(self.testable and test) else self.testing_subreddit
 
-    def changed_assets(self: SubredditUploader) -> Tuple[List[str], List[str]]:
+    def changed_assets(self: Uploader) -> Tuple[List[str], List[str]]:
         """
         identifies changed assets to upload or remove by checking if any changed files are images
         returns a tuple containing modified / new files and removed files
@@ -62,7 +62,7 @@ class SubredditUploader(object):
         ]
         return (uploading_files, removed_files)
 
-    def upload_images(self: SubredditUploader, upload: List[str],
+    def upload_images(self: Uploader, upload: List[str],
                       delete: List[str], test: bool = False) -> bool:
         """uploads and deletes images"""
         subreddit = self.get_subreddit_test(test)
@@ -84,7 +84,7 @@ class SubredditUploader(object):
 
         return True
 
-    def upload_reason(self: SubredditUploader) -> str:
+    def upload_reason(self: Uploader) -> str:
         """creates upload reason"""
         head_commit: Dict[str, Any] = self.webhook["head_commit"]
         commit_id: str = head_commit["id"]
@@ -92,7 +92,7 @@ class SubredditUploader(object):
         author: str = head_commit["author"]["username"]
         return "Commit {1} created on {2} by {3}".format(commit_id, timestamp, author)
 
-    def changed_stylesheet(self: SubredditUploader) -> bool:
+    def changed_stylesheet(self: Uploader) -> bool:
         """checks if any sass files have been changed"""
         ending: str = "scss"
         head_commit: Dict[str, Any] = self.webhook["head_commit"]
@@ -101,7 +101,7 @@ class SubredditUploader(object):
             for file in (head_commit["modified"] + head_commit["added"])
         )
 
-    def upload_stylesheet(self: SubredditUploader, test: bool = False) -> bool:
+    def upload_stylesheet(self: Uploader, test: bool = False) -> bool:
         """compiles and uploads stylesheet"""
         style: str = ""
         try:
