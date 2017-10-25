@@ -1,8 +1,10 @@
 """main server to listen to webhooks"""
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from flask import Flask, request, abort
+
+from ...secrets import Secrets
 
 app: Flask = Flask(__name__)
 
@@ -17,7 +19,9 @@ def verify(git_hash: str, local_key: str) -> bool:
 def webhook() -> None:
     """recieve data and pass it to update"""
     if request.methods == "POST":
-        if not verify(request.headers["X-Hub-Signature"], ""):
+        secret: Secrets = Secrets()
+        local_secret: Optional[str] = secret()["github"]["auth"]["local"]
+        if not verify(request.headers["X-Hub-Signature"], local_secret):
             abort(401)
 
         data: Dict[str, Any] = json.loads(request.data)
