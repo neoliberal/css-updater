@@ -1,8 +1,11 @@
 """manages github repos"""
 import git
 
+from .webhook.handler import Handler
+
 class Manager(object):
     """handles git repos"""
-    def __init__(self: Manager, master_branch: str = "master", test_branch: str = "development") -> None:
-        self.master_branch = master_branch
-        self.test_brach = test_branch
+    def __init__(self: Manager, handler: Handler, master: str = "master", test: str = "development") -> None:
+        self.webhook_handler: Handler = handler 
+        self.master_branch = master
+        self.test_brach = test
