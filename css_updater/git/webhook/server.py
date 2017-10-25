@@ -1,12 +1,8 @@
 """main server to listen to webhooks"""
 import json
-from typing import Dict, Any, TypeVar
+from typing import Dict, Any
 
 from flask import Flask, request, abort
-
-# leave my typedefs alone, pylint: disable=C0103
-Key = TypeVar("Key")
-WebhookData = Dict[str, Key]
 
 app: Flask = Flask(__name__)
 
@@ -24,6 +20,6 @@ def webhook() -> None:
         if not verify(request.headers["X-Hub-Signature"], ""):
             abort(401)
 
-        data: WebhookData[Any] = json.loads(request.data)
+        data: Dict[str, Any] = json.loads(request.data)
     else:
         abort(400)
