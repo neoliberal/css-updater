@@ -22,7 +22,7 @@ def webhook() -> None:
     """recieve data and pass it to update"""
     if request.methods == "POST":
         if not verify(request.headers["X-Hub-Signature"], ""):
-            abort(400)
+            abort(401)
 
         data: WebhookData[Any] = json.loads(request.data)
     else:
