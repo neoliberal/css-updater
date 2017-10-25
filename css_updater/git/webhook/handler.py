@@ -44,6 +44,6 @@ class Handler(object):
         return self.data["ref"].split('/')[-1]
 
     @property
-    def url(self: Handler) -> str:
+    def git_url(self: Handler) -> str:
         """returns url to github repository"""
-        return self.data["repository"]["html_url"]
+        return self.data["repository"]["git_url"]
