@@ -42,3 +42,8 @@ class Handler(object):
     def branch(self: Handler) -> str:
         """returns the branch the commit was pushed to"""
         return self.data["ref"].split('/')[-1]
+
+    @property
+    def url(self: Handler) -> str:
+        """returns url to github repository"""
+        return self.data["repository"]["html_url"]
