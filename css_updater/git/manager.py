@@ -1,11 +1,11 @@
 """manages github repos"""
 import os
 import tempfile
-from typing import Any, Dict
 
 import pygit2 as git
 
 from .webhook.handler import Handler
+from .config_handler import ConfigHandler
 
 
 class Manager(object):
@@ -15,7 +15,7 @@ class Manager(object):
         self.webhook_handler: Handler = handler
         self.temp_dir: tempfile.TemporaryDirectory = tempfile.TemporaryDirectory()
         self.repo: git.Repository = self.get_repo()
-        self.config: Dict[str, Any] = self.get_config()
+        self.config: ConfigHandler = self.get_config()
 
     def __del__(self: Manager) -> None:
         self.temp_dir.cleanup()
@@ -35,9 +35,8 @@ class Manager(object):
         local_repo: git.Repository = git.Repository(path=directory)
         return local_repo
 
-    def get_config(self: Manager) -> Dict[str, Any]:
+    def get_config(self: Manager) -> ConfigHandler:
         """gets config file inside repo"""
-        import json
         repo_index: git.repository.Index = self.repo.index
         repo_index.read()
         try:
@@ -46,5 +45,5 @@ class Manager(object):
             print("no config file exists")
         else:
             with self.repo[config_entry.id] as blob:
-                return json.loads(blob.data)
-        return {}
+                return ConfigHandler(blob.data)
+        return ConfigHandler("")
