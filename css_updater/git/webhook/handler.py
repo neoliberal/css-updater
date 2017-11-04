@@ -32,14 +32,14 @@ class Handler(object):
     @property
     def changed_files(self: Handler) -> List[str]:
         """returns added or changed files"""
-        added: List[str] = [file for file in [commit["added"] for commit in self.commits]]
-        modified: List[str] = [file for file in [commit["modified"] for commit in self.commits]]
+        added: List[str] = sum([commit["added"] for commit in self.commits])
+        modified: List[str] = sum([commit["modified"] for commit in self.commits])
         return added + modified
 
     @property
     def removed_files(self: Handler) -> List[str]:
         """returns removed files"""
-        return [file for file in [commit["removed"] for commit in self.commits]]
+        return sum([commit["removed"] for commit in self.commits])
 
     @property
     def author(self: Handler) -> str:
