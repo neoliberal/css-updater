@@ -15,6 +15,11 @@ class Handler(object):
         return self.data["head_commit"]
 
     @property
+    def commits(self: Handler) -> List[Dict[str, Any]]:
+        """returns commits"""
+        return self.data["commits"]
+
+    @property
     def repo_id(self: Handler) -> str:
         """returns repo's id"""
         return self.data["repository"]["id"]
@@ -27,17 +32,14 @@ class Handler(object):
     @property
     def changed_files(self: Handler) -> List[str]:
         """returns added or changed files"""
-        return self.head_commit["added"] + self.head_commit["modified"]
+        added: List[str] = [commit["added"] for commit in self.commits]
+        modified: List[str] = [commit["modified"] for commit in self.commits]
+        return added + modified
 
     @property
     def removed_files(self: Handler) -> List[str]:
         """returns removed files"""
-        return self.head_commit["removed"]
-
-    @property
-    def commits(self: Handler) -> List[Dict[str, Any]]:
-        """returns commits"""
-        return self.data["commits"]
+        return [commit["removed"] for commit in self.commits]
 
     @property
     def author(self: Handler) -> str:
@@ -61,16 +63,14 @@ class Handler(object):
         """
         endings: List[str] = ["png", "jpg"]
 
-        head_commit: Dict[str, Any] = self.head_commit
-
         uploading_files: List[str] = [
-            file for file in (head_commit["modified"] + head_commit["added"])
+            file for file in self.changed_files
             for ending in endings
             if os.path.splitext(file)[1] == ending
         ]
 
         removed_files: List[str] = [
-            file for file in head_commit["removed"]
+            file for file in self.removed_files
             for ending in endings
             if os.path.splitext(file)[1] == ending
         ]
@@ -79,9 +79,8 @@ class Handler(object):
     def changed_stylesheet(self: Handler) -> bool:
         """checks if any sass files have been changed"""
         endings: List[str] = ["scss", "css"]
-        head_commit: Dict[str, Any] = self.head_commit
         return any(
             os.path.splitext(file)[1] == ending
-            for file in (head_commit["modified"] + head_commit["added"])
+            for file in self.changed_files
             for ending in endings
         )
