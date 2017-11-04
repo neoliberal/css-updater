@@ -1,6 +1,7 @@
 """manages github repos"""
 import os
-from typing import Optional, Tuple, Any, Dict, List
+import tempfile
+from typing import Any, Dict
 
 import pygit2 as git
 
@@ -10,10 +11,14 @@ from .webhook.handler import Handler
 class Manager(object):
     """handles git repos"""
 
-    def __init__(self: Manager, handler: Handler, master: str = "master", test: Optional[str] = None) -> None:
+    def __init__(self: Manager, handler: Handler) -> None:
         self.webhook_handler: Handler = handler
+        self.temp_dir: tempfile.TemporaryDirectory = tempfile.TemporaryDirectory()
         self.repo: git.Repository = self.get_repo()
         self.config: Dict[str, Any] = self.get_config()
+
+    def __del__(self: Manager) -> None:
+        self.temp_dir.cleanup()
 
     def get_repo(self: Manager) -> git.Repository:
         """clone or initialize repository"""
