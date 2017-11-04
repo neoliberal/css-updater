@@ -1,4 +1,4 @@
 flask
-gitpython
+pygit2
 libsass
 praw

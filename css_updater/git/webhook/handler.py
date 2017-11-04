@@ -14,6 +14,11 @@ class Handler(object):
         return self.data["head_commit"]
 
     @property
+    def repo_id(self: Handler) -> str:
+        """returns repo's id"""
+        return self.data["repository"]["id"]
+
+    @property
     def timestamp(self: Handler) -> str:
         """returns timestamp of the head commit"""
         return self.head_commit["timestamp"]
