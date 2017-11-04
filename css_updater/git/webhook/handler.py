@@ -1,5 +1,6 @@
 """handles webhook"""
-from typing import Any, List, Dict
+import os
+from typing import Any, List, Dict, Tuple
 
 
 class Handler(object):
@@ -52,3 +53,35 @@ class Handler(object):
     def git_url(self: Handler) -> str:
         """returns url to github repository"""
         return self.data["repository"]["git_url"]
+
+    def changed_assets(self: Handler) -> Tuple[List[str], List[str]]:
+        """
+        identifies changed assets to upload or remove by checking if any changed files are images
+        returns a tuple containing modified / new files and removed files
+        """
+        endings: List[str] = ["png", "jpg"]
+
+        head_commit: Dict[str, Any] = self.head_commit
+
+        uploading_files: List[str] = [
+            file for file in (head_commit["modified"] + head_commit["added"])
+            for ending in endings
+            if os.path.splitext(file)[1] == ending
+        ]
+
+        removed_files: List[str] = [
+            file for file in head_commit["removed"]
+            for ending in endings
+            if os.path.splitext(file)[1] == ending
+        ]
+        return (uploading_files, removed_files)
+
+    def changed_stylesheet(self: Handler) -> bool:
+        """checks if any sass files have been changed"""
+        endings: List[str] = ["scss", "css"]
+        head_commit: Dict[str, Any] = self.head_commit
+        return any(
+            os.path.splitext(file)[1] == ending
+            for file in (head_commit["modified"] + head_commit["added"])
+            for ending in endings
+        )

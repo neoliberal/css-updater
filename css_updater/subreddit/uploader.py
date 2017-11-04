@@ -40,28 +40,6 @@ class Uploader(object):
         """gets appropriate subreddit based on if testing and if test sub is defined"""
         return self.subreddit if not(self.testable and test) else self.testing_subreddit
 
-    def changed_assets(self: Uploader) -> Tuple[List[str], List[str]]:
-        """
-        identifies changed assets to upload or remove by checking if any changed files are images
-        returns a tuple containing modified / new files and removed files
-        """
-        endings: List[str] = ["png", "jpg"]
-
-        head_commit: Dict[str, Any] = self.webhook["head_commit"]
-
-        uploading_files: List[str] = [
-            file for file in (head_commit["modified"] + head_commit["added"])
-            for ending in endings
-            if path.splitext(file)[1] == ending
-        ]
-
-        removed_files: List[str] = [
-            file for file in head_commit["removed"]
-            for ending in endings
-            if path.splitext(file)[1] == ending
-        ]
-        return (uploading_files, removed_files)
-
     def upload_images(self: Uploader, upload: List[str],
                       delete: List[str], test: bool = False) -> bool:
         """uploads and deletes images"""
@@ -91,15 +69,6 @@ class Uploader(object):
         timestamp: str = head_commit["timestamp"]
         author: str = head_commit["author"]["username"]
         return "Commit {1} created on {2} by {3}".format(commit_id, timestamp, author)
-
-    def changed_stylesheet(self: Uploader) -> bool:
-        """checks if any sass files have been changed"""
-        ending: str = "scss"
-        head_commit: Dict[str, Any] = self.webhook["head_commit"]
-        return any(
-            path.splitext(file)[1] == ending
-            for file in (head_commit["modified"] + head_commit["added"])
-        )
 
     def upload_stylesheet(self: Uploader, test: bool = False) -> bool:
         """compiles and uploads stylesheet"""

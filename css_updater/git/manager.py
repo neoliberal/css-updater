@@ -1,6 +1,6 @@
 """manages github repos"""
 import os
-from typing import Optional, Tuple, Any, Dict
+from typing import Optional, Tuple, Any, Dict, List
 
 import pygit2 as git
 
@@ -28,7 +28,6 @@ class Manager(object):
         # I"m going to assume the repo has already been created
         # dangerous assumption, and it'll bite me in the ass someday
         local_repo: git.Repository = git.Repository(path=directory)
-        local_repo.
         return local_repo
 
     def get_config(self: Manager) -> Dict[str, Any]:
@@ -36,10 +35,11 @@ class Manager(object):
         import json
         repo_index: git.repository.Index = self.repo.index
         repo_index.read()
-        try: 
+        try:
             config_entry = repo_index["css_updator.json"]
         except KeyError:
             print("no config file exists")
-        else: 
+        else:
             with self.repo[config_entry.id] as blob:
                 return json.loads(blob.data)
+        return {}
