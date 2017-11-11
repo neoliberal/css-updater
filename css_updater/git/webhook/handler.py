@@ -77,7 +77,7 @@ class Handler(object):
         return (uploading_files, removed_files)
 
     def changed_stylesheet(self: Handler) -> bool:
-        """checks if any sass files have been changed"""
+        """checks if any stylesheet files have been changed"""
         endings: List[str] = ["scss", "css"]
         return any(
             os.path.splitext(file)[1] == ending
