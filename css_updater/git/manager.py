@@ -19,7 +19,12 @@ class Manager(object):
 
         with open(os.path.join(self.temp_dir.name, "css-updater.json")) as config:
             import json
-            self.config: Dict[str, Any] = json.loads(config.read())
+            try:
+                self.config: Dict[str, Any] = json.loads(config.read())["css_updater"]
+            except KeyError as invalid_json:
+                print(invalid_json)
+            except IOError as io_error:
+                print(io_error)
 
     def __del__(self: Manager) -> None:
         self.temp_dir.cleanup()
