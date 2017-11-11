@@ -23,17 +23,8 @@ class Manager(object):
     def get_repo(self: Manager) -> git.Repository:
         """clone or initialize repository"""
 
-        repo_folder_name: str = self.webhook_handler.repo_id
-        directory = os.path.join(os.getcwd(), repo_folder_name)
-        if os.path is not os.path.isdir(directory):
-            os.makedirs(directory)
-            return git.clone_repository(
-                self.webhook_handler.git_url, path=directory)
-
-        # I"m going to assume the repo has already been created
-        # dangerous assumption, and it'll bite me in the ass someday
-        local_repo: git.Repository = git.Repository(path=directory)
-        return local_repo
+        return git.clone_repository(
+            self.webhook_handler.git_url, path=self.temp_dir.name)
 
     def get_config(self: Manager) -> ConfigHandler:
         """gets config file inside repo"""
