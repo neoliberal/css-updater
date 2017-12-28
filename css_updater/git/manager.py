@@ -15,7 +15,8 @@ class Manager(object):
         self.webhook_handler: Handler = handler
         self.temp_dir: tempfile.TemporaryDirectory = tempfile.TemporaryDirectory()
         self.repo: git.Repository = git.clone_repository(
-            self.webhook_handler.git_url, path=self.temp_dir.name)
+            self.webhook_handler.git_url, path=self.temp_dir.name
+        )
 
         with open(os.path.join(self.temp_dir.name, "css-updater.json")) as config:
             import json
